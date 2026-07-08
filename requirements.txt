@@ -1,0 +1,4 @@
+# things to be remeber while astronomer it should be compatible with airlfow 3.2
+# CONFLICT if both in same environment for airflow and dbt
+astronomer-cosmos==1.14.2
+apache-airflow-providers-postgres
