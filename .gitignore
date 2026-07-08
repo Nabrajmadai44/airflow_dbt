@@ -10,3 +10,11 @@ airflow-webserver.pid
 webserver_config.py
 airflow.cfg
 airflow.db
+
+
+# dbt generated files
+dbt/dbt_learn/dbt_packages/
+dbt/dbt_learn/target/
+dbt/dbt_learn/logs/
+dbt/dbt_learn/.user.yml
+dbt/dbt_learn/package-lock.yml

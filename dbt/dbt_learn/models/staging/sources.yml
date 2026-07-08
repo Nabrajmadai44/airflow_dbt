@@ -1,0 +1,26 @@
+
+version: 2
+
+sources:
+  - name: postgres
+    description: "Raw banking tables from PostgreSQL database"
+    schema: public
+
+    tables:
+      - name: customer
+        description: "Customer master data"
+
+      - name: account
+        description: "Customer account information"
+
+      - name: branch
+        description: "Branch master data"
+
+      - name: product
+        description: "Banking products"
+
+      - name: card
+        description: "Card information linked to accounts"
+
+      - name: hist_transactional
+        description: "Historical transaction records"
