@@ -222,43 +222,43 @@ http://localhost:8081
 
 ## Airflow DAGs
 
-![Airflow DAGs](screenshots/airflow_dags.png)
+![Airflow DAGs](Screenshots/airflow_dags.png)
 
 ---
 
 ## Master DAG Graph
 
-![Master DAG Graph](screenshots/master_dag_graph.png)
+![Master DAG Graph](Screenshots/master_dag_graph.png)
 
 ---
 
 ## Airflow Grid View
 
-![Airflow Grid](screenshots/airflow_grid.png)
+![Airflow Grid](Screenshots/airflow_grid.png)
 
 ---
 
 ## Docker Containers
 
-![Docker Containers](screenshots/docker_containers.png)
+![Docker Containers](Screenshots/docker_containers.png)
 
 ---
 
 ## dbt Documentation
 
-![dbt Docs](screenshots/dbt_docs.png)
+![dbt Docs](Screenshots/dbt_docs.png)
 
 ---
 
 ## dbt Models
 
-![dbt Models](screenshots/dbt_models.png)
+![dbt Models](Screenshots/dbt_models.png)
 
 ---
 
 ## Successful DAG Execution
 
-![DAG Success](screenshots/dag_success.png)
+![DAG Success](Screenshots/dag_success.png)
 
 ---
 
