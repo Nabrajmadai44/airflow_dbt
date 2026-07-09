@@ -1,45 +1,306 @@
-Overview
-========
+# Airflow + dbt ELT Pipeline using Astro
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+## Project Overview
 
-Project Contents
-================
+This project demonstrates an end-to-end ELT (Extract, Load, Transform) pipeline built
+using Apache Airflow, dbt, Cosmos, PostgreSQL, Docker, and Astro CLI.
 
-Your Astro project contains the following files and folders:
+The pipeline follows the Medallion Architecture (Bronze → Silver → Gold) and orchestrates
+data ingestion and transformation using Airflow DAGs. Data is first ingested into the Bronze layer,
+then transformed by dbt into Silver and Gold layers for analytics and reporting.
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+---
 
-Deploy Your Project Locally
-===========================
+# Technologies Used
 
-Start Airflow on your local machine by running 'astro dev start'.
+- Apache Airflow
+- Astro CLI
+- dbt (Data Build Tool)
+- Cosmos
+- PostgreSQL
+- Docker
+- Python
+- SQL
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+---
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+# Project Architecture
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+```text
+          Source Database
+                 │
+                 ▼
+        ingestion_dag
+      (Extract & Load)
+                 │
+                 ▼
+          Bronze Layer
+                 │
+                 ▼
+      dbt_learn_cosmos
+   (dbt Transformations)
+                 │
+        ┌────────┴────────┐
+        ▼                 ▼
+   Silver Layer      Gold Layer
+```
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+The master_dag orchestrates the pipeline by coordinating the ingestion process and triggering the dbt transformation DAG.
 
-Deploy Your Project to Astronomer
-=================================
+---
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+# Project Structure
 
-Contact
-=======
+```text
+airflow_dbt/
+│
+├── dags/
+│   ├── ingestion_dag.py
+│   ├── master_dag.py
+│   └── dbt_learn_dag.py
+│
+├── dbt/
+│   └── dbt_learn/
+│       ├── models/
+│       │   ├── staging/
+│       │   └── marts/
+│       ├── macros/
+│       ├── seeds/
+│       ├── snapshots/
+│       ├── tests/
+│       ├── dbt_project.yml
+│       ├── packages.yml
+│       └── package-lock.yml
+│
+├── include/
+├── plugins/
+├── tests/
+│
+├── Dockerfile
+├── airflow_settings.yaml
+├── requirements.txt
+├── packages.txt
+└── README.md
+```
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+---
+
+# Airflow DAGs
+
+## 1. ingestion_dag
+
+Responsible for:
+
+- Extracting data from PostgreSQL source tables
+- Validating extracted data
+- Simulating loading data into the Bronze layer
+- Preparing data for dbt transformations
+
+---
+
+## 2. dbt_learn_cosmos
+
+Responsible for:
+
+- Running dbt models using Cosmos
+- Executing staging models
+- Building dimension tables
+- Building fact tables
+- Transforming Bronze data into Silver and Gold layers
+
+---
+
+## 3. master_dag
+
+Responsible for:
+
+- Coordinating the complete ELT workflow
+- Running the ingestion process
+- Triggering the dbt Cosmos DAG
+- Managing the end-to-end pipeline
+
+---
+
+# dbt Models
+
+## Staging Models
+
+- stg_accounts
+- stg_branch
+- stg_card
+- stg_customer
+- stg_hist_transactional
+- stg_product
+
+---
+
+## Dimension Models
+
+- dim_branch
+- dim_date
+- dim_product
+
+---
+
+## Fact Models
+
+- fct_account_transaction
+- fct_branch_performance
+- fct_product_performance
+
+---
+
+# How to Run
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Nabrajmadai44/airflow_dbt.git
+```
+
+---
+
+## 2. Navigate to the Project
+
+```bash
+cd airflow_dbt
+```
+
+---
+
+## 3. Start the Airflow Environment
+
+```bash
+astro dev start
+```
+
+---
+
+## 4. Open the Airflow UI
+
+```
+http://localhost:8080
+```
+
+---
+
+## 5. Execute the Pipeline
+
+The recommended way to run the project is by executing the master_dag.
+
+The master_dag orchestrates the workflow by running the ingestion process and triggering
+the dbt_learn_cosmos DAG to perform dbt transformations.
+
+The ingestion_dag and dbt_learn_cosmos DAGs can also be executed independently for
+testing, debugging, or development purposes.
+
+---
+
+# Generate dbt Documentation
+
+Generate the documentation:
+
+```bash
+dbt docs generate
+```
+
+Serve the documentation:
+
+```bash
+dbt docs serve
+```
+
+Open:
+
+```
+http://localhost:8081
+```
+
+---
+
+# Screenshots
+
+## Airflow DAGs
+
+![Airflow DAGs](screenshots/airflow_dags.png)
+
+---
+
+## Master DAG Graph
+
+![Master DAG Graph](screenshots/master_dag_graph.png)
+
+---
+
+## Airflow Grid View
+
+![Airflow Grid](screenshots/airflow_grid.png)
+
+---
+
+## Docker Containers
+
+![Docker Containers](screenshots/docker_containers.png)
+
+---
+
+## dbt Documentation
+
+![dbt Docs](screenshots/dbt_docs.png)
+
+---
+
+## dbt Models
+
+![dbt Models](screenshots/dbt_models.png)
+
+---
+
+## Successful DAG Execution
+
+![DAG Success](screenshots/dag_success.png)
+
+---
+
+# Features
+
+- End-to-end ELT pipeline
+- Apache Airflow workflow orchestration
+- dbt integration using Cosmos
+- PostgreSQL data warehouse
+- Medallion Architecture (Bronze → Silver → Gold)
+- Docker-based local development
+- Modular Airflow DAG design
+- Data validation during ingestion
+- Automated dbt transformations
+- dbt documentation generation
+
+---
+
+# Future Improvements
+
+- Incremental model execution
+- Automated data quality monitoring
+- Email notifications
+- Pipeline monitoring dashboard
+- CI/CD using GitHub Actions
+- Scheduling and production deployment
+
+---
+
+# Author
+
+Nabraj Madai
+
+Data Engineering Project
+
+### Technologies
+
+- Apache Airflow
+- Astro CLI
+- dbt
+- Cosmos
+- PostgreSQL
+- Docker
+- Python
+- SQL
